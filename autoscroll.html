@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Scrolling Lyrics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #f5f5f5;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            height: 80vh;
+            overflow: hidden;
+            padding: 20px;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 800px;
+            border: 2px solid #444;
+            border-radius: 15px;
+            background-color: #2e2e2e;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #lyrics {
+            white-space: pre-wrap;
+            text-align: left;
+            line-height: 1.6;
+            font-size: 1.5rem;
+            overflow-y: scroll;
+            height: 100%;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .controls button,
+        .controls input,
+        .controls select {
+            margin: 10px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .controls button {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .controls button:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+        }
+
+        .controls input[type="range"] {
+            width: 200px;
+        }
+
+        @media screen and (max-width: 768px) {
+            #container {
+                width: 70%;
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Auto-Scrolling Lyrics</h1>
+    <div id="container">
+        <div id="lyrics" contenteditable="true">
+            Paste your lyrics here...
+        </div>
+    </div>
+    <div class="controls">
+        <button id="start">Start Scrolling</button>
+        <button id="stop" disabled>Stop Scrolling</button>
+        <label for="speed">Speed:</label>
+        <input type="range" id="speed" min="1" max="10" value="5">
+        <label for="fontSize">Font Size:</label>
+        <input type="range" id="fontSize" min="16" max="36" value="24">
+        <label for="bgColor">Background:</label>
+        <select id="bgColor">
+            <option value="#1e1e1e">Dark</option>
+            <option value="#ffffff">Light</option>
+            <option value="#f0f8ff">AliceBlue</option>
+            <option value="#ffefd5">PapayaWhip</option>
+        </select>
+    </div>
+
+    <script>
+        let interval;
+        const lyricsDiv = document.getElementById("lyrics");
+        const startBtn = document.getElementById("start");
+        const stopBtn = document.getElementById("stop");
+        const speedControl = document.getElementById("speed");
+        const fontSizeControl = document.getElementById("fontSize");
+        const bgColorControl = document.getElementById("bgColor");
+
+        startBtn.addEventListener("click", () => {
+            const speed = 11 - parseInt(speedControl.value); // Inverse speed logic
+            interval = setInterval(() => {
+                lyricsDiv.scrollTop += 1;
+                if (lyricsDiv.scrollTop + lyricsDiv.clientHeight >= lyricsDiv.scrollHeight) {
+                    clearInterval(interval);
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                }
+            }, speed * 10);
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+        });
+
+        stopBtn.addEventListener("click", () => {
+            clearInterval(interval);
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        });
+
+        speedControl.addEventListener("input", () => {
+            if (!startBtn.disabled) return;
+            clearInterval(interval);
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        });
+
+        fontSizeControl.addEventListener("input", () => {
+            lyricsDiv.style.fontSize = fontSizeControl.value + "px";
+        });
+
+        bgColorControl.addEventListener("change", () => {
+            document.body.style.backgroundColor = bgColorControl.value;
+        });
+    </script>
+</body>
+
+</html>
